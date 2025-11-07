@@ -1,6 +1,6 @@
 services:
   dev:
-    hostname: vic-starter
+    hostname: audric-starter
     build: ./
     restart: unless-stopped
     depends_on:
@@ -22,18 +22,18 @@ services:
       - MYSQL_USER=${MYSQL_USER:-api}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:-toor}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-api}
-      - MYSQL_HOST=vic-starter-mysql
+      - MYSQL_HOST=audric-starter-mysql
       - MYSQL_PORT=${MYSQL_PORT:-3306}
-      - DATABASE_URL=mysql://${MYSQL_USER:-api}:${MYSQL_PASSWORD:-toor}@${MYSQL_HOST:-vic-starter-mysql}:${MYSQL_PORT:-3306}/${MYSQL_DATABASE:-api}?serverVersion=8.0
-      - REDIS_DSN=redis://toor@vic-starter-redis:6379
-      - MESSENGER_TRANSPORT_DSN=redis://toor@vic-starter-redis:6379
-      - LOCK_DSN=redis://toor@vic-starter-redis:6379
-      - MAILER_DSN=smtp://vic-starter-mailcatcher:1025
+      - DATABASE_URL=mysql://${MYSQL_USER:-api}:${MYSQL_PASSWORD:-toor}@${MYSQL_HOST:-audric-starter-mysql}:${MYSQL_PORT:-3306}/${MYSQL_DATABASE:-api}?serverVersion=8.0
+      - REDIS_DSN=redis://toor@audric-starter-redis:6379
+      - MESSENGER_TRANSPORT_DSN=redis://toor@audric-starter-redis:6379
+      - LOCK_DSN=redis://toor@audric-starter-redis:6379
+      - MAILER_DSN=smtp://audric-starter-mailcatcher:1025
     volumes:
       - .:/app
 
   mysql:
-    hostname: vic-starter-mysql
+    hostname: audric-starter-mysql
     image: mysql:8.4.5
     restart: unless-stopped
     command:
@@ -54,7 +54,7 @@ services:
       - mysql_data:/var/lib/mysql
 
   redis:
-    hostname: vic-starter-redis
+    hostname: audric-starter-redis
     image: redis:8.0.0
     restart: unless-stopped
     command: "redis-server --port 6379 --save 20 1 --loglevel warning --requirepass toor"
@@ -67,22 +67,45 @@ services:
       - redis_data:/data
 
   adminer:
-    hostname: vic-starter-adminer
+    hostname: audric-starter-adminer
     image: adminer:latest
     restart: unless-stopped
     ports:
       - "8001:8080"
     environment:
-      ADMINER_DEFAULT_SERVER: vic-starter-mysql
+      ADMINER_DEFAULT_SERVER: audric-starter-mysql
       ADMINER_DESIGN: nette
 
   mailcatcher:
-    hostname: vic-starter-mailcatcher
+    hostname: audric-starter-mailcatcher
     image: sj26/mailcatcher:latest
     restart: unless-stopped
     ports:
       - "1080:1080"
 
+###> doctrine/doctrine-bundle ###
+  database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      # You should definitely change the password in production
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/db/data:/var/lib/postgresql/data:rw
+###< doctrine/doctrine-bundle ###
+
 volumes:
   mysql_data:
   redis_data:
+
+###> doctrine/doctrine-bundle ###
+  database_data:
+###< doctrine/doctrine-bundle ###
