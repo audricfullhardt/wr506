@@ -11,10 +11,15 @@ final class LoginController extends AbstractController
     #[Route('/api/login', name: 'api_login', methods: ['POST'])]
     public function index(#[CurrentUser] ?User $user): Response
     {
-        if (null === $user) {
-            throw $this->createAccessDeniedException();
-        }
+        // if (null === $user) {
+        //     throw $this->createAccessDeniedException();
+        // }
 
-        return $this->json(['token' => 'votre-super-token', 'user' => $user->getUserIdentifier()]);
+        // return $this->json(['token' => 'votre-super-token', 'user' => $user->getUserIdentifier()]);
+
+        return $this->json([
+            'message' => 'Login successful',
+            'user' => $user ? $user->getUserIdentifier() : null,
+        ]);
     }
 }
