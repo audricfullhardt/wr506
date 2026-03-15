@@ -1,6 +1,20 @@
 api_platform:
-    title: Hello API Platform
-    version: 1.0.0
+    title: TechSupport360 - API de Gestion de Tickets
+    description: |
+        API REST pour la gestion centralisée des tickets de support technique.
+
+        **TechSupport360** permet à ses clients de soumettre et suivre leurs demandes de support,
+        aux agents de traiter les tickets assignés, et aux administrateurs de gérer l'ensemble du système.
+
+        ## Authentification
+        L'API utilise une authentification par **token JWT**. Effectuez un `POST /api/login` avec vos
+        identifiants pour obtenir un token, puis incluez-le dans le header `Authorization: Bearer <token>`.
+
+        ## Rôles
+        - **Client** (ROLE_USER) : crée des tickets, commente ses tickets, suit leur avancement.
+        - **Agent** (ROLE_AGENT) : traite les tickets assignés, change leur statut, commente.
+        - **Admin** (ROLE_ADMIN) : gère les utilisateurs, catégories, et a une vue globale sur tous les tickets.
+    version: '%env(APP_VERSION)%'
     defaults:
         stateless: true
         cache_headers:
@@ -8,3 +22,9 @@ api_platform:
     formats:
         jsonld: ['application/ld+json']
         json: ['application/json']
+    docs_formats:
+        jsonld: ['application/ld+json']
+        jsonopenapi: ['application/vnd.openapi+json']
+        html: ['text/html']
+    swagger:
+        versions: [3]
