@@ -3,13 +3,16 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 trait TimestampableTrait
 {
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Groups(['timestampable'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Groups(['timestampable'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     public function getCreatedAt(): ?\DateTimeImmutable
